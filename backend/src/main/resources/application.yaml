@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: rocket lunch
+  datasource:
+    url: jdbc:postgresql://${db.hostname:localhost}:${db.port:5432}/${db.dbname:postgres}?currentSchema=${db.schema:rocketlunch}
+    username: ${db.username:postgres}
+    password: ${db.password:postgres}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      javax.persistence.sharedCache.mode: ENABLE_SELECTIVE
+      hibernate:
+        show_sql: false
+        format_sql: true
+  flyway.table: schema_version
+server:
+  port: 8090
