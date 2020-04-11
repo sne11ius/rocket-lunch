@@ -17,3 +17,8 @@ spring:
   flyway.table: schema_version
 server:
   port: 8090
+springdoc:
+  pathsToMatch: /**
+  swagger-ui:
+    doc-expansion: none
+    operations-sorter: alpha
