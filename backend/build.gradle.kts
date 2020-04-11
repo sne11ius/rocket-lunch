@@ -1,11 +1,14 @@
+
 import org.gradle.api.JavaVersion.*
+import org.hidetake.gradle.swagger.generator.GenerateSwaggerCode
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-	id("org.springframework.boot") version "2.3.0.BUILD-SNAPSHOT"
+	id("org.springframework.boot") version "2.2.6.RELEASE"
 	id("io.spring.dependency-management") version "1.0.9.RELEASE"
 	id("com.github.johnrengelman.processes") version "0.5.0"
 	id("org.springdoc.openapi-gradle-plugin") version "1.0.0"
+	id("org.hidetake.swagger.generator") version "2.18.2"
 
 	val kotlinVersion = "1.3.71"
 	kotlin("jvm") version kotlinVersion
@@ -17,7 +20,7 @@ group = "rocket-lunch"
 version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = VERSION_11
 
-val developmentOnly by configurations.creating
+val developmentOnly: Configuration by configurations.creating
 configurations {
 	runtimeClasspath {
 		extendsFrom(developmentOnly)
@@ -26,12 +29,7 @@ configurations {
 
 repositories {
 	mavenCentral()
-	maven { url = uri("https://repo.spring.io/milestone") }
-	maven { url = uri("https://repo.spring.io/snapshot") }
 }
-
-extra["springBootAdminVersion"] = "2.2.1"
-extra["springCloudVersion"] = "Hoxton.BUILD-SNAPSHOT"
 
 dependencies {
 	val openapiVersion = "1.3.1"
@@ -46,6 +44,7 @@ dependencies {
 	implementation("io.github.microutils:kotlin-logging:1.7.9")
 	implementation("org.springdoc:springdoc-openapi-webmvc-core:$openapiVersion")
 	implementation("org.springdoc:springdoc-openapi-ui:$openapiVersion")
+	"swaggerCodegen"("io.swagger.codegen.v3:swagger-codegen-cli:3.0.19")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	runtimeOnly("com.h2database:h2")
 	runtimeOnly("org.postgresql:postgresql")
@@ -56,8 +55,6 @@ dependencies {
 
 dependencyManagement {
 	imports {
-		mavenBom("de.codecentric:spring-boot-admin-dependencies:${property("springBootAdminVersion")}")
-		mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
 	}
 }
 
@@ -76,4 +73,22 @@ openApi {
 	apiDocsUrl.set("http://localhost:8090/v3/api-docs")
 	outputDir.set(file("$buildDir"))
 	waitTimeInSeconds.set(20)
+}
+
+swaggerSources {
+	create("rocketlunch").apply {
+		setInputFile(file("$buildDir/openapi.json"))
+		code(closureOf<GenerateSwaggerCode> {
+			language = "javascript"
+			additionalProperties = mapOf(
+					"usePromises" to "true",
+					"useES6" to "true"
+			)
+		})
+	}
+}
+
+tasks.withType<GenerateSwaggerCode> {
+	// Make sure openapi.json is generated before use
+	dependsOn("generateOpenApiDocs")
 }
