@@ -44,7 +44,7 @@ dependencies {
 	implementation("io.github.microutils:kotlin-logging:1.7.9")
 	implementation("org.springdoc:springdoc-openapi-webmvc-core:$openapiVersion")
 	implementation("org.springdoc:springdoc-openapi-ui:$openapiVersion")
-	"swaggerCodegen"("io.swagger.codegen.v3:swagger-codegen-cli:3.0.19")
+	"swaggerCodegen"("org.openapitools:openapi-generator-cli:4.3.0")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	runtimeOnly("com.h2database:h2")
 	runtimeOnly("org.postgresql:postgresql")
@@ -79,10 +79,13 @@ swaggerSources {
 	create("rocketlunch").apply {
 		setInputFile(file("$buildDir/openapi.json"))
 		code(closureOf<GenerateSwaggerCode> {
-			language = "javascript"
+			language = "typescript-fetch"
 			additionalProperties = mapOf(
-					"usePromises" to "true",
-					"useES6" to "true"
+				// js ecosystem is ... always a pleasure.
+				// ... find strange errors while npm run server
+				// ... google 2 hours
+				// find this friggn commit: https://github.com/OpenAPITools/openapi-generator/pull/3801/commits/0aa4262ef6b2926b74851922107b696bdb192e7e
+				"typescriptThreePlus" to "true"
 			)
 		})
 	}
@@ -94,8 +97,8 @@ tasks.withType<GenerateSwaggerCode> {
 }
 
 tasks {
-	val apiDir = file("$buildDir/swagger-code-rocketlunch/src")
-	val apiTargetDir = file("$rootDir/../frontend/api/generated")
+	val apiDir = file("$buildDir/swagger-code-rocketlunch")
+	val apiTargetDir = file("$rootDir/../frontend/src/api/generated")
 	val syncApi by registering(Sync::class) {
 		from(apiDir)
 		into(apiTargetDir)
