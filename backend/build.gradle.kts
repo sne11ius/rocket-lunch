@@ -92,3 +92,18 @@ tasks.withType<GenerateSwaggerCode> {
 	// Make sure openapi.json is generated before use
 	dependsOn("generateOpenApiDocs")
 }
+
+tasks {
+	val apiDir = file("$buildDir/swagger-code-rocketlunch/src")
+	val apiTargetDir = file("$rootDir/../frontend/api/generated")
+	val syncApi by registering(Sync::class) {
+		from(apiDir)
+		into(apiTargetDir)
+		dependsOn("generateSwaggerCode")
+	}
+
+	register("all") {
+		dependsOn("assemble")
+		dependsOn(syncApi)
+	}
+}
