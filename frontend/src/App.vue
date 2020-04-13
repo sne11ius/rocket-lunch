@@ -38,20 +38,20 @@
     </v-app-bar>
 
     <v-content>
-      <HelloWorld/>
+      <LocationList/>
     </v-content>
   </v-app>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
-import HelloWorld from './components/HelloWorld.vue'
+import LocationList from './components/LocationList.vue'
 
 export default Vue.extend({
   name: 'App',
 
   components: {
-    HelloWorld
+    LocationList
   },
 
   data: () => ({

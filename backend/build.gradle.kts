@@ -85,6 +85,7 @@ swaggerSources {
 				// ... find strange errors while npm run server
 				// ... google 2 hours
 				// find this friggn commit: https://github.com/OpenAPITools/openapi-generator/pull/3801/commits/0aa4262ef6b2926b74851922107b696bdb192e7e
+				// ... see https://github.com/OpenAPITools/openapi-generator/blob/master/docs/generators/typescript-fetch.md
 				"typescriptThreePlus" to "true"
 			)
 		})
