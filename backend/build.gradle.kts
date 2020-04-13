@@ -9,6 +9,8 @@ plugins {
 	id("com.github.johnrengelman.processes") version "0.5.0"
 	id("org.springdoc.openapi-gradle-plugin") version "1.0.0"
 	id("org.hidetake.swagger.generator") version "2.18.2"
+	id("com.google.cloud.tools.jib") version "2.1.0"
+	id("com.dorongold.task-tree") version "1.5"
 
 	val kotlinVersion = "1.3.71"
 	kotlin("jvm") version kotlinVersion
@@ -58,6 +60,19 @@ dependencyManagement {
 	}
 }
 
+jib {
+	from {
+		image = "gcr.io/distroless/java:11-debug"
+	}
+	to {
+		image = "sne11ius/rocket-lunch-backend"
+	}
+}
+
+tasks.build {
+	dependsOn("jib")
+}
+
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
@@ -105,9 +120,7 @@ tasks {
 		into(apiTargetDir)
 		dependsOn("generateSwaggerCode")
 	}
-
-	register("all") {
-		dependsOn("assemble")
+	build {
 		dependsOn(syncApi)
 	}
 }
