@@ -1,4 +1,5 @@
 
+import org.apache.tools.ant.filters.ReplaceTokens
 import org.gradle.api.JavaVersion.*
 import org.hidetake.gradle.swagger.generator.GenerateSwaggerCode
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
@@ -115,9 +116,10 @@ tasks.withType<GenerateSwaggerCode> {
 tasks {
 	val apiDir = file("$buildDir/swagger-code-rocketlunch")
 	val apiTargetDir = file("$rootDir/../frontend/src/api/generated")
-	val syncApi by registering(Sync::class) {
+	val syncApi by registering(Copy::class) {
 		from(apiDir)
 		into(apiTargetDir)
+		filter { line -> line.replace("http://localhost:8090", "/") }
 		dependsOn("generateSwaggerCode")
 	}
 	build {
