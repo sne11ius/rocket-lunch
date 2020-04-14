@@ -6,7 +6,7 @@ cd frontend && npm run build && cd .. || exit 1
 
 cat <<'EOF' > Dockerfile || exit 1
 FROM sne11ius/rocket-lunch-backend
-COPY ./frontend/dist/* /app/resources/static/
+COPY ./frontend/dist/ /app/resources/public/
 EOF
 
 docker pull sne11ius/rocket-lunch-backend
